@@ -1,0 +1,288 @@
+================================================================
+  BIDVAULT ENHANCED — COMPLETE SETUP & RUN GUIDE
+  Real-Time Auction Platform | CSD303A Assignment Part 2
+================================================================
+
+TECH STACK
+----------
+  Frontend : React 18 + Vite + Tailwind CSS + Socket.IO Client
+  Backend  : Node.js + Express + Socket.IO
+  Database : MongoDB (Mongoose ODM)
+  Auth     : JWT (JSON Web Tokens) + bcryptjs
+
+================================================================
+SECTION 1 — PREREQUISITES
+================================================================
+
+Before you begin, make sure you have the following installed:
+
+1. Node.js v18 or higher
+   Download: https://nodejs.org/en/download
+   Verify:   node --version   (should show v18.x.x or higher)
+
+2. npm (comes with Node.js)
+   Verify:   npm --version    (should show 9.x.x or higher)
+
+3. MongoDB — choose ONE of the following options:
+
+   OPTION A — MongoDB Atlas (Cloud, Recommended for beginners)
+   -----------------------------------------------------------
+   a. Go to https://cloud.mongodb.com and create a free account
+   b. Create a new Cluster (free M0 tier is fine)
+   c. Go to Database Access → Add New User
+      - Username: bidvault
+      - Password: (choose a strong password)
+      - Role: Read and Write to any database
+   d. Go to Network Access → Add IP Address → Allow Access from Anywhere
+   e. Go to your Cluster → Connect → Drivers
+   f. Copy the connection string — it looks like:
+      mongodb+srv://bidvault:<password>@cluster0.xxxxx.mongodb.net/bidvault
+   g. Replace <password> with the password you set
+
+   OPTION B — Local MongoDB
+   ------------------------
+   a. Download from https://www.mongodb.com/try/download/community
+   b. Install and start MongoDB service
+   c. Your connection string will be: mongodb://localhost:27017/bidvault
+
+================================================================
+SECTION 2 — PROJECT SETUP
+================================================================
+
+Step 1 — Extract the project
+-----------------------------
+Unzip bidvault-enhanced.zip to a folder of your choice.
+  Example: C:\Projects\bidvault-enhanced  (Windows)
+           ~/Projects/bidvault-enhanced   (Mac/Linux)
+
+Step 2 — Open a terminal / command prompt
+------------------------------------------
+  Windows: Press Win+R, type "cmd", press Enter
+           OR right-click the folder → "Open in Terminal"
+  Mac/Linux: Open Terminal, navigate to the project folder
+
+  cd path/to/bidvault-enhanced
+  (e.g., cd ~/Projects/bidvault-enhanced)
+
+Step 3 — Create the environment file
+--------------------------------------
+In the project root folder, create a file named ".env"
+(copy from .env.example and fill in your values):
+
+  Windows CMD:
+    copy .env.example .env
+
+  Mac/Linux:
+    cp .env.example .env
+
+Now open .env in any text editor (Notepad, VS Code, etc.)
+and set your values:
+
+  MONGODB_URI=<your MongoDB connection string from Section 1>
+  JWT_SECRET=supersecretkey_changethis_inproduction_12345
+  PORT=5000
+  NODE_ENV=development
+
+  IMPORTANT: JWT_SECRET can be any long random string.
+  Example: JWT_SECRET=xK9mP2wQ7nL4vR8jT1cA6sE3bU0yF5dH
+
+Step 4 — Install all dependencies
+-----------------------------------
+Run these two commands (the second one builds the frontend):
+
+  npm install
+  cd client && npm install && npm run build && cd ..
+
+  This may take 2-3 minutes the first time.
+  You should see "✓ built in X.XXs" when the build is done.
+
+================================================================
+SECTION 3 — SEED SAMPLE DATA (OPTIONAL BUT RECOMMENDED)
+================================================================
+
+This will create sample auction listings and the admin account.
+
+  node server/seed.js
+
+You should see output like:
+  ✅ Connected to MongoDB
+  🗑️  Cleared existing auctions
+  ✅ Admin user created: admin@bidvault.com / admin123
+  ✅ Created 8 sample auctions
+  🚀 Seed complete!
+
+================================================================
+SECTION 4 — RUNNING THE APPLICATION
+================================================================
+
+Start the server:
+  npm start
+  OR for auto-reload during development:
+  npm run dev
+
+You should see:
+  ✅ Connected to MongoDB
+  ✅ Default admin created: admin@bidvault.com / admin123
+  🚀 BidVault server running at http://localhost:5000
+
+Open your browser and visit:
+  http://localhost:5000
+
+================================================================
+SECTION 5 — ACCOUNTS & ACCESS
+================================================================
+
+ADMIN ACCOUNT (auto-created on first run)
+  Email    : admin@bidvault.com
+  Password : admin123
+  Access   : http://localhost:5000/admin
+
+  The admin panel lets you:
+  - View platform statistics dashboard
+  - Create, edit, feature, cancel, delete auctions
+  - Manage users (grant/revoke admin, delete accounts)
+  - Watch live bid activity in real-time
+
+REGULAR USER
+  Go to http://localhost:5000/register to create a new account
+  OR log in at http://localhost:5000/login
+
+  Regular users can:
+  - Browse all live auctions
+  - Search and filter by category
+  - View detailed auction pages with bid history
+  - Place real-time bids
+  - Track their bids on the dashboard
+  - See which auctions they are leading or have won
+
+================================================================
+SECTION 6 — KEY URLS
+================================================================
+
+  Landing Page   : http://localhost:5000/
+  All Auctions   : http://localhost:5000/auctions
+  Login          : http://localhost:5000/login
+  Register       : http://localhost:5000/register
+  My Dashboard   : http://localhost:5000/dashboard
+  Admin Panel    : http://localhost:5000/admin
+  Admin Auctions : http://localhost:5000/admin/auctions
+  Create Auction : http://localhost:5000/admin/auctions/new
+  Admin Users    : http://localhost:5000/admin/users
+
+================================================================
+SECTION 7 — DEVELOPMENT MODE (FRONTEND HOT RELOAD)
+================================================================
+
+For active frontend development, run two terminals simultaneously:
+
+Terminal 1 — Backend server:
+  npm run dev
+
+Terminal 2 — Vite dev server (hot reload):
+  cd client
+  npm run dev
+
+Then open: http://localhost:5173
+(Vite proxies API calls to localhost:5000 automatically)
+
+NOTE: After making changes to React files, the frontend
+auto-reloads instantly. After changing server files,
+nodemon restarts the server automatically.
+
+================================================================
+SECTION 8 — REBUILD FRONTEND AFTER CHANGES
+================================================================
+
+If you modify any React files and want to rebuild for production:
+
+  cd client
+  npm run build
+  cd ..
+
+The compiled output goes into client/dist/
+The Express server then serves these static files.
+
+================================================================
+SECTION 9 — TROUBLESHOOTING
+================================================================
+
+Problem: "Cannot connect to MongoDB"
+Solution: Check your MONGODB_URI in .env. Make sure:
+  - Atlas: your IP is whitelisted and password is correct
+  - Local: mongod service is running (mongod --dbpath /data/db)
+
+Problem: "Port 5000 already in use"
+Solution: Change PORT=5001 in .env and restart
+
+Problem: "Module not found" errors
+Solution: Re-run: npm install && cd client && npm install && cd ..
+
+Problem: Admin panel not accessible after login
+Solution: Make sure you logged in with admin@bidvault.com
+  If the admin was deleted, run: node server/seed.js again
+
+Problem: Bids not updating in real-time
+Solution: Check browser console for WebSocket errors.
+  Make sure the server is running. Try refreshing.
+
+Problem: Build fails with CSS/Tailwind errors
+Solution: cd client && rm -rf node_modules && npm install && npm run build
+
+================================================================
+SECTION 10 — PROJECT STRUCTURE OVERVIEW
+================================================================
+
+bidvault-enhanced/
+├── .env.example          ← Copy this to .env and fill values
+├── package.json          ← Server dependencies & scripts
+├── server/
+│   ├── index.js          ← Main Express + Socket.IO server
+│   ├── seed.js           ← Database seed script
+│   ├── models/
+│   │   ├── User.js       ← User schema (with isAdmin flag)
+│   │   └── Auction.js    ← Auction schema with bid history
+│   ├── middleware/
+│   │   ├── auth.js       ← JWT authentication middleware
+│   │   └── admin.js      ← Admin-only access guard
+│   └── routes/
+│       ├── auth.js       ← /api/auth/* (login, register, me)
+│       ├── auctions.js   ← /api/auctions/* (browse, bid)
+│       └── admin.js      ← /api/admin/* (CRUD, stats)
+└── client/
+    ├── package.json      ← React dependencies
+    ├── vite.config.js    ← Vite bundler config
+    ├── tailwind.config.js
+    └── src/
+        ├── App.jsx        ← Routing
+        ├── main.jsx       ← React entry point
+        ├── index.css      ← Global styles + Tailwind
+        ├── context/
+        │   ├── AuthContext.jsx    ← Auth state (user, login, logout)
+        │   └── SocketContext.jsx  ← Global Socket.IO connection
+        ├── hooks/
+        │   └── useCountdown.js   ← Live countdown timer hook
+        ├── utils/
+        │   └── format.js         ← Currency, date formatters
+        ├── components/
+        │   ├── shared/
+        │   │   ├── Navbar.jsx
+        │   │   └── CountdownTimer.jsx
+        │   └── user/
+        │       └── AuctionCard.jsx
+        └── pages/
+            ├── LandingPage.jsx
+            ├── AuctionsPage.jsx
+            ├── AuctionDetailPage.jsx
+            ├── DashboardPage.jsx
+            ├── LoginPage.jsx
+            ├── RegisterPage.jsx
+            └── admin/
+                ├── AdminLayout.jsx
+                ├── AdminDashboard.jsx
+                ├── AdminAuctions.jsx
+                ├── AdminCreateAuction.jsx
+                └── AdminUsers.jsx
+
+================================================================
+END OF GUIDE
+================================================================
